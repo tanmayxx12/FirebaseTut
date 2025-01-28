@@ -8,6 +8,10 @@
 import Firebase
 import SwiftUI
 
+// Using AppDelegate for UIKit:
+/*
+ 
+ */
 @main
 struct FirebaseTutApp: App {
     
@@ -27,3 +31,21 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
 }
+
+
+// Using init() for SwiftUI:
+/*
+ @main
+ struct FirebaseTutApp: App {
+     init() {
+         FirebaseApp.configure()
+     }
+     
+     var body: some Scene {
+         WindowGroup {
+             RootView()
+         }
+     }
+ }
+ */
+
