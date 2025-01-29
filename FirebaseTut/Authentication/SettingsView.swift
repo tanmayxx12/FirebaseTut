@@ -65,6 +65,7 @@ struct SettingsView: View {
     SettingsView(showSignInView: .constant(false))
 }
 
+// MARK: Authentication by using email and password: 
 extension SettingsView {
     var emailSection: some View {
         Section("Email Functions") {
