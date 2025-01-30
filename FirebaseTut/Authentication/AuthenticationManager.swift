@@ -21,6 +21,11 @@ struct AuthDataResultModel {
     }
 }
 
+enum AuthProviderOptions: String {
+    case email = "password"
+    case google = "google.com"
+}
+
 final class AuthenticationManager {
     static let shared = AuthenticationManager()
     
@@ -32,6 +37,25 @@ final class AuthenticationManager {
             throw URLError(.badServerResponse)
         }
         return AuthDataResultModel(user: user )
+    }
+    
+    // google.com
+    // password
+    
+    
+    func getProviders() throws -> [AuthProviderOptions] {
+        guard let providerData = Auth.auth().currentUser?.providerData else {
+            throw URLError(.badServerResponse)
+        }
+        var providers: [AuthProviderOptions] = []
+        for provider in providerData {
+            if let option = AuthProviderOptions(rawValue: provider.providerID) {
+                providers.append(option)
+            } else {
+                assertionFailure("Provider option not found: \(provider.providerID)")
+            }
+        }
+        return providers
     }
 
     // Function to sign out the user:
@@ -81,8 +105,9 @@ extension AuthenticationManager {
 // MARK: Sign In SSO
 extension AuthenticationManager {
     
-    func signInWithGoogle(credential: AuthCredential) async throws -> AuthDataResultModel {
-        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+    @discardableResult
+    func signInWithGoogle(tokens:  GoogleSignInResultModel) async throws -> AuthDataResultModel {
+        let credential = GoogleAuthProvider.credential(withIDToken: tokens.idToken, accessToken: tokens.accessToken)
         return try await signIn(credential: credential)
     }
     

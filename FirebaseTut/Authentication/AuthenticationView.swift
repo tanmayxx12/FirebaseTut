@@ -10,28 +10,18 @@ import GoogleSignIn
 import GoogleSignInSwift
 import SwiftUI
 
+
 // Creating a view model:
 @MainActor
 final class AuthenticationViewModel: ObservableObject {
     
     
     func signInGoogle() async throws {
-        guard let topVC = Utilities.shared.topViewController() else {
-            throw URLError(.cannotFindHost)
-        }
-        
-        
-        let gidSignedInResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: topVC)
-//        gidSignedInResult.
-        
-        guard let idToken: String = gidSignedInResult.user.idToken?.tokenString else {
-            throw URLError(.badServerResponse)
-        }
-        let accessToken: String = gidSignedInResult.user.accessToken.tokenString
-       
-        
+        let helper = SignInGoogleHelper()
+        let tokens = try await helper.signIn()
+        try await AuthenticationManager.shared.signInWithGoogle(tokens: tokens)
     }
-    
+     
 }
 
 struct AuthenticationView: View {
@@ -54,7 +44,14 @@ struct AuthenticationView: View {
                 }
                 
                 GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .dark, style: .wide, state: .normal)) {
-                    
+                    Task {
+                        do {
+                            try await viewModel.signInGoogle()
+                            showSignInView = false
+                        } catch {
+                            print("There was an error: \(error.localizedDescription)")
+                        }
+                    }
                 }
                 
                 Spacer()

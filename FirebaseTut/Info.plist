@@ -10,8 +10,18 @@
 			<key>CFBundleURLName</key>
 			<string>Google Sign In</string>
 			<key>CFBundleURLSchemes</key>
-			<array/>
+			<array>
+				<string>com.googleusercontent.apps.91628550386-vv87m3ind0jtmrecih1klouvu9c1cpmv</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string></string>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>91628550386-vv87m3ind0jtmrecih1klouvu9c1cpmv.apps.googleusercontent.com</string>
 </dict>
 </plist>
