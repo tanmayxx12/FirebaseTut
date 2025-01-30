@@ -15,13 +15,17 @@ import SwiftUI
 @MainActor
 final class AuthenticationViewModel: ObservableObject {
     
-    
     func signInGoogle() async throws {
         let helper = SignInGoogleHelper()
         let tokens = try await helper.signIn()
         try await AuthenticationManager.shared.signInWithGoogle(tokens: tokens)
     }
      
+    func signInAnonymous() async throws {
+        try await AuthenticationManager.shared.signInAnonymous()
+    }
+    
+    
 }
 
 struct AuthenticationView: View {
@@ -42,6 +46,26 @@ struct AuthenticationView: View {
                         .background(.blue)
                         .cornerRadius(10)
                 }
+                
+                Button {
+                    Task {
+                        do {
+                            try await viewModel.signInAnonymous()
+                            showSignInView = false
+                        } catch {
+                            print("There was an error: \(error.localizedDescription)")
+                        }
+                    }
+                } label: {
+                    Text("Sign In Anonymously")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(height: 55)
+                        .frame(maxWidth: .infinity)
+                        .background(.black.opacity(0.5))
+                        .cornerRadius(10)
+                }
+
                 
                 GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .dark, style: .wide, state: .normal)) {
                     Task {

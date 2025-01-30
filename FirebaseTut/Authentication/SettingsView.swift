@@ -10,11 +10,16 @@ import SwiftUI
 @MainActor
 final class SettingsViewModel: ObservableObject {
     @Published var authProviders: [AuthProviderOptions] = []
+    @Published var authUser: AuthDataResultModel? = nil
     
     func loadAuthProviders() {
         if let providers = try? AuthenticationManager.shared.getProviders() {
             authProviders = providers
         }
+    }
+    
+    func loadAuthUser() {
+        self.authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
     }
     
     
@@ -39,6 +44,20 @@ final class SettingsViewModel: ObservableObject {
         let password = "Hello123"
         try await AuthenticationManager.shared.updatePassword(password: password)
     }
+    
+//    func linkEmailAccount() async throws {
+//        let email = "hello123@gmail.com"
+//        let password = "Hello123!"
+//        try await AuthenticationManager.shared.linkEmail(email: email, password: password)
+//        
+//    }
+//    
+//    func linkGoogleAccount() async throws {
+//        let helper = SignInGoogleHelper()
+//        let tokens = try await helper.signIn()
+//        try await AuthenticationManager.shared.linkGoogle(tokens: tokens)
+//    }
+    
     
 }
 
@@ -66,10 +85,14 @@ struct SettingsView: View {
                     emailSection
                 }
                 
+                if viewModel.authUser?.isAnonymous == true {
+                    anonymousSection
+                }
                 
                 
             }
             .onAppear{
+                viewModel.loadAuthUser()
                 viewModel.loadAuthProviders()
             }
             .navigationTitle("Settings")
@@ -83,7 +106,7 @@ struct SettingsView: View {
 
 // MARK: Authentication by using email and password: 
 extension SettingsView {
-    var emailSection: some View {
+    private var emailSection: some View {
         Section("Email Functions") {
             Button("Reset Password") {
                 Task {
@@ -116,6 +139,35 @@ extension SettingsView {
                 }
             }
         }
+        
+    }
+    
+    private var anonymousSection: some View {
+        Section("Create Account") {
+            Button("Link Google Account") {
+                Task {
+                    do {
+                        try await viewModel.resetPassword()
+                        showSignInView = true
+                    } catch {
+                        print("There was an error: \(error.localizedDescription)")
+                    }
+                }
+            }
+            
+            Button("Link Email Account") {
+                Task {
+                    do {
+                        try await viewModel.updatePassword()
+                    } catch {
+                        print("There was an error updating password: \(error.localizedDescription)")
+                    }
+                }
+            }
+            
+            
+        }
 
     }
+    
 }
