@@ -35,18 +35,6 @@ struct AuthenticationView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                NavigationLink {
-                    SignInEmailView(showSignInView: $showSignInView)
-                } label: {
-                    Text("Sign In With Email")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .frame(height: 55)
-                        .frame(maxWidth: .infinity)
-                        .background(.blue)
-                        .cornerRadius(10)
-                }
-                
                 Button {
                     Task {
                         do {
@@ -63,6 +51,18 @@ struct AuthenticationView: View {
                         .frame(height: 55)
                         .frame(maxWidth: .infinity)
                         .background(.black.opacity(0.5))
+                        .cornerRadius(10)
+                }
+                
+                NavigationLink {
+                    SignInEmailView(showSignInView: $showSignInView)
+                } label: {
+                    Text("Sign In With Email")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(height: 55)
+                        .frame(maxWidth: .infinity)
+                        .background(.blue)
                         .cornerRadius(10)
                 }
 
