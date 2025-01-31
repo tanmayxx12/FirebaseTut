@@ -45,18 +45,19 @@ final class SettingsViewModel: ObservableObject {
         try await AuthenticationManager.shared.updatePassword(password: password)
     }
     
-//    func linkEmailAccount() async throws {
-//        let email = "hello123@gmail.com"
-//        let password = "Hello123!"
-//        try await AuthenticationManager.shared.linkEmail(email: email, password: password)
-//        
-//    }
-//    
-//    func linkGoogleAccount() async throws {
-//        let helper = SignInGoogleHelper()
-//        let tokens = try await helper.signIn()
-//        try await AuthenticationManager.shared.linkGoogle(tokens: tokens)
-//    }
+    func linkEmailAccount() async throws {
+        let email = "hello123@gmail.com"
+        let password = "Hello123!"
+        let authDataResult = try await AuthenticationManager.shared.linkEmail(email: email, password: password)
+        self.authUser = authDataResult
+    }
+    
+    func linkGoogleAccount() async throws {
+        let helper = SignInGoogleHelper()
+        let tokens = try await helper.signIn()
+        let authDataResult = try await AuthenticationManager.shared.linkGoogle(tokens: tokens)
+        self.authUser = authDataResult
+    }
     
     
 }
@@ -144,26 +145,29 @@ extension SettingsView {
     
     private var anonymousSection: some View {
         Section("Create Account") {
-            Button("Link Google Account") {
-                Task {
-                    do {
-                        try await viewModel.resetPassword()
-                        showSignInView = true
-                    } catch {
-                        print("There was an error: \(error.localizedDescription)")
-                    }
-                }
-            }
             
             Button("Link Email Account") {
                 Task {
                     do {
-                        try await viewModel.updatePassword()
+                        try await viewModel.linkEmailAccount()
+                        print("Email Linked")
                     } catch {
                         print("There was an error updating password: \(error.localizedDescription)")
                     }
                 }
             }
+             
+            Button("Link Google Account") {
+                Task {
+                    do {
+                        try await viewModel.linkGoogleAccount()
+                        print("Google Linked")
+                    } catch {
+                        print("There was an error: \(error.localizedDescription)")
+                    }
+                }
+            }
+        
             
             
         }
