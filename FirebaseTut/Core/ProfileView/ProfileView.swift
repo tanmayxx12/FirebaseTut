@@ -11,11 +11,11 @@ import SwiftUI
 @MainActor
 final class ProfileViewModel: ObservableObject {
     
-    @Published private(set) var user: AuthDataResultModel? = nil
+    @Published private(set) var user: DBUser? = nil
     
-    func loadCurrentUser() throws {
+    func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = authDataResult
+        self.user = try await UserManager.shared.getUser(userID: authDataResult.uid)
     }
 }
 
@@ -28,13 +28,19 @@ struct ProfileView: View {
         NavigationStack {
             List {
                 if let user = viewModel.user {
-                    Text("UserID: \(user.uid)")
+                    Text("UserID: \(user.userID)")
+                    
+                    if let isAnonymous = user.isAnonymous {
+                        Text("Is Anonymous: \(isAnonymous.description.capitalized)")
+                    }
+                    
+                    
                 }
                 
             }
             .navigationTitle("Profile")
-            .onAppear{
-                try? viewModel.loadCurrentUser()
+            .task {
+                try? await viewModel.loadCurrentUser()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

@@ -15,7 +15,6 @@ struct AuthDataResultModel {
     let photoUrl: String?
     let isAnonymous: Bool
     
-    
     init(user: User) {
         self.uid = user.uid
         self.email = user.email
