@@ -27,6 +27,10 @@ final class SettingsViewModel: ObservableObject {
         try AuthenticationManager.shared.signOut()
     }
     
+    func deleteAccount() async throws {
+        try await AuthenticationManager.shared.delete()
+    }
+    
     func resetPassword() async throws {
         let authUser = try AuthenticationManager.shared.getAuthenticatedUser()
         guard let email = authUser.email else {
@@ -59,7 +63,6 @@ final class SettingsViewModel: ObservableObject {
         self.authUser = authDataResult
     }
     
-    
 }
 
 
@@ -77,6 +80,16 @@ struct SettingsView: View {
                             showSignInView = true
                         } catch {
                             print("There was an error: \(error.localizedDescription)")
+                        }
+                    }
+                }
+                
+                Button("Delete Account", role: .destructive) {
+                    Task {
+                        do {
+                            try await viewModel.deleteAccount()
+                        } catch {
+                            print("\(error.localizedDescription)")
                         }
                     }
                 }
